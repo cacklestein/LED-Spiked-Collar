@@ -41,29 +41,34 @@
 #define NEO_KHZ400  0x00 // 400 KHz datastream
 #endif
 
+#define NEO_MAX_BRIGHTNESS 0x20
+#define NEO_MAX_BLEND 0x100
+
 class Adafruit_NeoPixel {
 
  public:
 
   // Constructor: number of LEDs, pin number, LED type
-  Adafruit_NeoPixel(uint16_t n, uint8_t p=6, uint8_t t=NEO_GRB + NEO_KHZ800);
+  Adafruit_NeoPixel(uint16_t n, uint8_t p=6, uint8_t t=NEO_GRB + NEO_KHZ800,
+    uint16_t m = 0);
   ~Adafruit_NeoPixel();
 
   void
     begin(void),
-    show(void),
+    show(),
     setPin(uint8_t p),
     setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b),
-    setPixelColor(uint16_t n, uint32_t c),
     setBrightness(uint8_t),
-    clear();
+    blendPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint16_t blend),
+    clear(),
+    fade(uint8_t r, uint8_t g, uint8_t b, uint16_t blend),
+    adjustBrightnessForMaxCurrent();
   uint8_t
    *getPixels(void) const,
     getBrightness(void) const;
   uint16_t
-    numPixels(void) const;
-  static uint32_t
-    Color(uint8_t r, uint8_t g, uint8_t b);
+    numPixels(void) const,
+    calculateCurrent(bool scale = false);
   uint32_t
     getPixelColor(uint16_t n) const;
   inline bool
@@ -73,10 +78,11 @@ class Adafruit_NeoPixel {
 
   const uint16_t
     numLEDs,       // Number of RGB LEDs in strip
-    numBytes;      // Size of 'pixels' buffer below
+    numBytes,      // Size of 'pixels' buffer below
+    maxCurrent;    // Maximum current in mA
   uint8_t
     pin,           // Output pin number
-    brightness,
+    brightness,    // Brightness scale (0 - 32 corresponds to 0.0 - 1.0 scale)
    *pixels,        // Holds LED color values (3 bytes each)
     rOffset,       // Index of red byte within each 3-byte pixel
     gOffset,       // Index of green byte
@@ -95,3 +101,4 @@ class Adafruit_NeoPixel {
 };
 
 #endif // ADAFRUIT_NEOPIXEL_H
+
